@@ -7,3 +7,17 @@ The Plant_eV library is built for monitoring plant electrical signals in control
 In the hardware section, a list of sensors and diagrams are available for the wiring of the RPi and the NodeMcu.
 
 ## Dowloading the libary 
+``` python
+git clone https://github.com/YasmeenVH/Plant_eV
+cd Plant_eV
+pip install -e .
+
+cd ..
+# Installing RPi packages
+apt-get install $(grep -vE "^\s*#" packages.txt  | tr "\n" " ")
+
+# Installing python requirements
+pip install -r requirements.txt
+```
+
+
