@@ -14,7 +14,7 @@ pip install -e .
 
 cd ..
 # Installing RPi packages
-apt-get install $(grep -vE "^\s*#" packages.txt  | tr "\n" " ")
+xargs sudo apt-get install <packages.txt
 
 # Installing python requirements
 pip install -r requirements.txt
