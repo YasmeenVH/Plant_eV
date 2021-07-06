@@ -4,7 +4,9 @@ import sys
 import Adafruit_DHT
 import time
 from time import sleep
-import datetime
+from datetime import datetime
+from datetime import date
+#import datetime
 import busio
 import board
 import adafruit_ccs811
@@ -15,9 +17,22 @@ from os import path
 import pandas as pd
 import RPi.GPIO as GPIO
 
+
+PATH = 'home/pi/Pictures/Plant_eV/'
+
+def check_day(t1,t2):
+	print("what type is this",type(t1.day()))
+	if t1.day() == t2.day():
+		day_root = t1.strftime("%Y%m%d")
+		return day_root
+	else:
+		return t2.strftime("%Y%m%d")
+
 class Sensors(object):
-	def __init__(self):
-		pass
+	def __init__(self, path = PATH):
+		self.path = path
+		self.timestamp = datetime.now()
+
 	def hdf5_exist(self,root):
 		# Check if file exists and have it in write option
 
@@ -42,14 +57,20 @@ class Sensors(object):
                         print('Error making directory: ',directory)
 
 
-	def picture(self,root):
+	def picture(self):
+		t = datetime.now()
+		#tday = t.day()
+		print('what type is t1',t.day)
+		print("t1,t2",t,self.timestamp)
+		day_root = check_day(t,self.timestamp)
+		self.timestamp = t
 		camera = PiCamera()
-		day = time.time()
+		day = int(time.time())
 		camera.start_preview()
-		camera.capture()
-		sleep(1)
+		camera.capture(self.root+day_root+'/'+str(int(day))+'.jpg')
+		sleep(.2)
 		camera.stop_preview()
-
+		
 	def gas(self):
 		i2c_bus = busio.I2C(board.SCL, board.SDA)
 		ccs811 = adafruit_ccs811.CCS811(i2c_bus)
@@ -90,11 +111,13 @@ class Sensors(object):
 def main():
 # Sensor activating
 	S = Sensors()
-	root = "/home/pi/sensors/"	 # define root
+	print("what is this",datetime.now().day)
+	#root = "/home/pi/sensors/"	 # define root
 	time_id = time.time()
-	root = '/home/pi/sensors/' # define root
+	#root = '/home/pi/sensors/' # define root
 	#data = pd.DataFrame({'time':time_id,'co2':S.gas()[0],'voc':S.gas()[1],'rh':S.rh_temp()[0],'temp':S.rh_temp()[1]})
 	## add to hdf5
+	S.picture()
 	print('temp',S.rh_temp()[1],'humidity',S.rh_temp()[0])
 	co2 = S.gas()[0]
 	voc = S.gas()[1]
