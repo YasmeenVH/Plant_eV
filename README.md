@@ -12,7 +12,6 @@ git clone https://github.com/YasmeenVH/Plant_eV
 cd Plant_eV
 pip install -e .
 
-cd ..
 # Installing RPi packages
 sudo apt-get install dselect && sudo dselect update
 sudo dpkg --set-selections < packages.txt
