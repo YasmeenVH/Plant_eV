@@ -14,7 +14,9 @@ pip install -e .
 
 cd ..
 # Installing RPi packages
-xargs sudo apt-get install <packages.txt
+sudo apt-get install dselect && sudo dselect update
+sudo dpkg --set-selections < packages.txt
+sudo apt-get -u dselect-upgrade
 
 # Installing python requirements
 pip install -r requirements.txt
