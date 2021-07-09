@@ -11,14 +11,22 @@ The Raspberry Pi monitors environmental variables such as:
 - Relative Humidity and Temperature (DHT11) - unit= % and C
 - Camera 
 - Photoresistor (Qifei) - unit = binary (0 is off 1 is on)
+#### Enabling I2C Protocol
+The CO2 and VOC sensor needs the I2C protocol to be enabled. Instructions can be found [here](https://www.raspberrypi-spy.co.uk/2014/11/enabling-the-i2c-interface-on-the-raspberry-pi/)
+#### Enabling Camera
+```python
+sudo raspi-config
+```
+- Select interface option 
+- Enable Camera
+```python
+sudo reboot
+```
 
 ### NodeMcu
 The NodeMcu is built to measure a plant's surface potential, it includes:
 - Resistance 
 - Positive and Negative arm
-
-## Enabling I2C Protocol
-The CO2 and VOC sensor needs the I2C protocol to be enabled. Instructions can be found [here](https://www.raspberrypi-spy.co.uk/2014/11/enabling-the-i2c-interface-on-the-raspberry-pi/)
 
 ## Dowloading the libary 
 ``` python
