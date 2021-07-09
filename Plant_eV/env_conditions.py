@@ -17,13 +17,15 @@ from os import path
 import pandas as pd
 import RPi.GPIO as GPIO
 
+from adafruit_servokit import ServoKit
+
 
 PATH = './Pictures/rpi/'
 
 
 def check_day(t1, t2):
-    print("what type is this", type(t1.day()))
-    if t1.day() == t2.day():
+    #print("what type is this", type(t1.day()))
+    if t1.day == t2.day:
         day_root = t1.strftime("%Y%m%d")
         return day_root
     else:
@@ -85,6 +87,7 @@ class Sensors(object):
         camera.stop_preview()
 
     def gas(self):
+        # kit = ServoKit(channels=16, i2c=(busio.I2C(board.SCL, board.SDA)))
         i2c_bus = busio.I2C(board.SCL, board.SDA)
         ccs811 = adafruit_ccs811.CCS811(i2c_bus)
         co2 = ccs811.eco2	     # results in ppm
@@ -151,5 +154,5 @@ def main():
     print(light, "what is light")
 
 
-# if __name__ == '__main__':
-#       main()
+if __name__ == '__main__':
+    main()
