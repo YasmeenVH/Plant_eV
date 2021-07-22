@@ -10,7 +10,7 @@ import json
 import os.path
 from os import path
 from datetime import datetime
-from Plant_eV.env_conditions import Sensors
+from software.Plant_eV.env_conditions import Sensors
 
 S=Sensors()
 
