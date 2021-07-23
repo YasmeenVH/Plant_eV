@@ -1,17 +1,20 @@
 from __future__ import print_function
 import os.path
 from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-from Plant_eV.env_conditions import Sensors
+from software.Plant_eV.env_conditions import Sensors
 from datetime import datetime
 import time
 
 S = Sensors()
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
+          'https://www.googleapis.com/auth/drive.metadata',
+          'https://www.googleapis.com/auth/drive']
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1rri--nBigNM81pKesh6lv49hO8oz41gK76Z_r3s0EVk'
@@ -40,18 +43,19 @@ class Sheets_Logging():
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', self.SCOPES)
+                'credentials.json', SCOPES)
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
             with open('token.json', 'w') as token:
                 token.write(creds.to_json())
 
-        self.service = build('sheets', 'v4', credentials=creds)
+        self.service_sheet = build('sheets', 'v4', credentials=creds)
 
+        self.service_drive = build('drive', 'v3', credentials=creds)
 
     def read_data(self):
         # Call the Sheets API
-        service = self.service
+        service = self.service_sheet
         sheet = service.spreadsheets()
         result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                                 range=SAMPLE_RANGE_NAME).execute()
@@ -66,7 +70,7 @@ class Sheets_Logging():
 
     def write_data(self):
         # Write to the sheets API
-        service = self.service
+        service = self.service_sheet
         rh, temp = S.rh_temp()
         co2, voc = S.gas()
         date = datetime.now()
@@ -79,10 +83,23 @@ class Sheets_Logging():
                spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME,
                valueInputOption='USER_ENTERED', body=body).execute()
 
+
+    def send_image(self):
+        #Send a image to the drive
+        service       = self.service_drive
+        file_metadata = {'name': '20210722_13_32_14.jpg'}
+        media         = MediaFileUpload('Pictures/rpi/20210722/20210722_13_32_14.jpg', mimetype='image/jpeg')
+        file          = service.files().create(body=file_metadata,
+                                               media_body=media,
+                                               fields='id').execute()
+
+
+
 if __name__ == '__main__':
     doc = Sheets_Logging()
     doc.read_data()
+    doc.send_image()
     for j in range(10):
         doc.write_data()
         print(j)
-        time.sleep(20)
+        time.sleep(120)
