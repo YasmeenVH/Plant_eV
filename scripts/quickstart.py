@@ -87,8 +87,10 @@ class Sheets_Logging():
     def send_image(self):
         #Send a image to the drive
         service       = self.service_drive
-        file_metadata = {'name': '20210722_13_32_14.jpg'}
-        media         = MediaFileUpload('Pictures/rpi/20210722/20210722_13_32_14.jpg', mimetype='image/jpeg')
+        folder_id     = '17c4i15J_1m_ONgt5HFr-SeEzdv49WUYb'
+        path          = S.picture()
+        file_metadata = {'name':[path],'parents':[folder_id]}
+        media         = MediaFileUpload(path, mimetype='image/jpeg', resumable=True)
         file          = service.files().create(body=file_metadata,
                                                media_body=media,
                                                fields='id').execute()
@@ -97,9 +99,8 @@ class Sheets_Logging():
 
 if __name__ == '__main__':
     doc = Sheets_Logging()
-    doc.read_data()
-    doc.send_image()
-    for j in range(10):
+    for j in range(30):
         doc.write_data()
+        doc.send_image()
         print(j)
         time.sleep(120)

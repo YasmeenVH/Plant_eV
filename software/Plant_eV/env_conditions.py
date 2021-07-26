@@ -75,16 +75,19 @@ class Sensors(object):
         # print("t1,t2",t,self.timestamp)
         # check if we are in the same day
         day_root = check_day(t, self.timestamp)
-        print("what is day root", day_root)
         self.create_Folder(self.path+day_root)
         self.timestamp = t                     # update previous timestep to now
         camera = PiCamera()
         day = t.strftime("%Y%m%d_%H_%M_%S")
         camera.start_preview()
-        camera.capture(self.path+day_root+'/'+str(day)+'.jpg')
         sleep(.2)
+        camera.capture(self.path+day_root+'/'+str(day)+'.jpg')
         t = datetime.now()
         camera.stop_preview()
+        camera.close()
+        path = self.path+day_root+'/'+str(day)+'.jpg'
+
+        return path
 
     def gas(self):
         # kit = ServoKit(channels=16, i2c=(busio.I2C(board.SCL, board.SDA)))
