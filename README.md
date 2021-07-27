@@ -45,11 +45,11 @@ sudo reboot
 ```
 More detailed information can be found [here](https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/i2c-clock-stretching)
 
-Finally, it is possible to verify that the IC2 port is working properly. 
+Finally, it is possible to test the hardware. 
 ```python
 sudo i2cdetect -y 1
 ```
-If the 
+Make sure that devices connected are to adresses 0x40 and ax50. If not, check the wiring of the Raspberry Pi and make sure that the previous procedures have been done correctly. 
 #### 1.1.2 Enabling Camera
 ```python
 sudo raspi-config
