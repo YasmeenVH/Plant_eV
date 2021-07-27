@@ -49,7 +49,7 @@ Finally, it is possible to verify that the IC2 port is working properly.
 ```python
 sudo i2cdetect -y 1
 ```
-
+If the 
 #### 1.1.2 Enabling Camera
 ```python
 sudo raspi-config
