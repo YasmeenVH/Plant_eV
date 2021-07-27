@@ -12,7 +12,7 @@ The Raspberry Pi monitors environmental variables such as:
 - Camera 
 - Photoresistor (Qifei) - unit = binary (0 is off 1 is on)
 #### 1.1.1 CO2 and VOC sensor - Enabling I2C Protocol
-The I2C protocol needs to be enabled for the CO2 and VOC sensor to work. 
+The I2C protocol needs to be enabled for the CO2 and VOC sensor to work.// 
 The first step is to enable the IC2 port.
 ```python
 sudo raspi-config
@@ -35,11 +35,7 @@ dtparam=i2s=on
 dtparam=spi=on
 ```
 ```python
--	# Clock stretching by slowing down to 10KHz
-dtparam=i2c_arm_baudrate=10000
-```
-```python
--	# Clock stretching by slowing down to 10KHz
+-# Clock stretching by slowing down to 10KHz
 dtparam=i2c_arm_baudrate=10000
 ```
 Next, save the file and exit (in Nano, press Ctrl-O, Enter, then press Ctrl-X)
