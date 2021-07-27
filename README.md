@@ -26,7 +26,7 @@ More detailed information can be found [here](https://www.raspberrypi-spy.co.uk/
 
 The second step is to deal with potential IC2 clock stretching problems.
 ```python
-sudo raspi-config
+sudo nano /boot/config.txt
 ```
 ```python
 # Uncomment some or all of these to enable the optional hardware interfaces
@@ -35,7 +35,7 @@ dtparam=i2s=on
 dtparam=spi=on
 ```
 ```python
--# Clock stretching by slowing down to 10KHz
+# Clock stretching by slowing down to 10KHz
 dtparam=i2c_arm_baudrate=10000
 ```
 Next, save the file and exit (in Nano, press Ctrl-O, Enter, then press Ctrl-X)
