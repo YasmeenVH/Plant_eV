@@ -11,8 +11,41 @@ The Raspberry Pi monitors environmental variables such as:
 - Relative Humidity and Temperature (DHT11) - unit= % and C
 - Camera 
 - Photoresistor (Qifei) - unit = binary (0 is off 1 is on)
-#### 1.1.1 Enabling I2C Protocol
-The CO2 and VOC sensor needs the I2C protocol to be enabled. Instructions can be found [here](https://www.raspberrypi-spy.co.uk/2014/11/enabling-the-i2c-interface-on-the-raspberry-pi/)
+#### 1.1.1 CO2 and VOC sensor - Enabling I2C Protocol
+The I2C protocol needs to be enabled for the CO2 and VOC sensor to work. 
+The first step is to enable the IC2 port.
+```python
+sudo raspi-config
+```
+- Select interface option 
+- Enable IC2 port
+```python
+sudo reboot
+```
+More detailed information can be found [here](https://www.raspberrypi-spy.co.uk/2014/11/enabling-the-i2c-interface-on-the-raspberry-pi/)
+
+The second step is to deal with potential IC2 clock stretching problems.
+```python
+sudo raspi-config
+```
+```python
+# Uncomment some or all of these to enable the optional hardware interfaces
+dtparam=i2c_arm=on
+dtparam=i2s=on
+dtparam=spi=on
+```
+```python
+-	# Clock stretching by slowing down to 10KHz
+dtparam=i2c_arm_baudrate=10000
+```
+```python
+-	# Clock stretching by slowing down to 10KHz
+dtparam=i2c_arm_baudrate=10000
+```
+Next, save the file and exit (in Nano, press Ctrl-O, Enter, then press Ctrl-X)
+```python
+sudo reboot
+```
 #### 1.1.2 Enabling Camera
 ```python
 sudo raspi-config
