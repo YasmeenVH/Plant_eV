@@ -49,7 +49,7 @@ Finally, it is possible to test the hardware.
 ```python
 sudo i2cdetect -y 1
 ```
-Make sure that devices connected are to adresses 0x40 and ax50. If not, check the wiring of the Raspberry Pi and make sure that the previous procedures have been done correctly. 
+Make sure that devices are connected to adresses 0x40 and ax50. If not, check the wiring of the Raspberry Pi and make sure that the previous procedures have been done correctly. 
 #### 1.1.2 Enabling Camera
 ```python
 sudo raspi-config
