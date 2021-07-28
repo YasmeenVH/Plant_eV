@@ -17,8 +17,8 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
           'https://www.googleapis.com/auth/drive']
 
 # The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = '1rri--nBigNM81pKesh6lv49hO8oz41gK76Z_r3s0EVk'
-SAMPLE_RANGE_NAME = 'Sheet1'
+SAMPLE_SPREADSHEET_ID = '1oJn-5r90I6OSF3o83mErOFKTkYo_shfeAzyJYEzTOD4'
+SAMPLE_RANGE_NAME = 'Sheet2'
 
 class Sheets_Logging():
 #def main():
@@ -87,7 +87,7 @@ class Sheets_Logging():
     def send_image(self):
         #Send a image to the drive
         service       = self.service_drive
-        folder_id     = '17c4i15J_1m_ONgt5HFr-SeEzdv49WUYb'
+        folder_id     = '1ajB2Te-RX2yKDquelkO5-ZK2tlbgPBEY'
         path          = S.picture()
         file_metadata = {'name':[path],'parents':[folder_id]}
         media         = MediaFileUpload(path, mimetype='image/jpeg', resumable=True)
