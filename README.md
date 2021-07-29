@@ -69,7 +69,6 @@ The NodeMcu is built to measure a plant's surface potential, it includes:
 ``` python
 git clone https://github.com/YasmeenVH/Plant_eV
 cd Plant_eV
-pip3 install -e .
 
 # Installing RPi packages
 sudo apt-get install dselect && sudo dselect update
@@ -78,6 +77,9 @@ sudo apt-get -u dselect-upgrade
 
 # Installing python requirements
 pip3 install -r requirements_good.txt
+
+# Installing library
+pip3 install -e .
 ```
 
 
