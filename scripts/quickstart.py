@@ -23,7 +23,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1rri--nBigNM81pKesh6lv49hO8oz41gK76Z_r3s0EVk'
-SAMPLE_RANGE_NAME = 'Sheet3'
+SAMPLE_RANGE_NAME = 'RPI 3'
 
 class Sheets_Logging():
 #def main():
@@ -106,8 +106,8 @@ class Sheets_Logging():
         #Send email
         service            = self.service_gmail
         user_id            = "me"
-        to                 = "bo-sen.wu@mail.mcgill.ca"
-        #to                 = "jerome.tbrais@gmail.com"
+#        to                 = "bo-sen.wu@mail.mcgill.ca"
+        to                 = "jerome.tbrais@gmail.com"
         sender             = "biogen.plantsignal@gmail.com"
         subject            = "Sensor Update"
         message_text       = "Everything is still running properly!"
@@ -122,7 +122,7 @@ class Sheets_Logging():
 if __name__ == '__main__':
     doc = Sheets_Logging()
     count = 0
-    TIMER_EMAIL = 43 200 #seconds
+    TIMER_EMAIL = 43200 #seconds
     TIMER_DATA  = 300    #seconds
 #    TIMER_EMAIL = 120
 #    TIMER_DATA  = 30
