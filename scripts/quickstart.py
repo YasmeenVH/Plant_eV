@@ -106,7 +106,8 @@ class Sheets_Logging():
         #Send email
         service            = self.service_gmail
         user_id            = "me"
-        to                 = "jerome.tbrais@gmail.com"
+        to                 = "bo-sen.wu@mail.mcgill.ca"
+        #to                 = "jerome.tbrais@gmail.com"
         sender             = "biogen.plantsignal@gmail.com"
         subject            = "Sensor Update"
         message_text       = "Everything is still running properly!"
@@ -118,71 +119,22 @@ class Sheets_Logging():
         message_send       = (service.users().messages().send(userId=user_id, body=message_created).execute())
 
 
-
-#class ExitHooks(object):
-#
-#    def __init__(self):
-#        self.exit_code = None
-#        self.exception = None
-#
-#    def hook(self):
-#        print("yo3")
-#        self._orig_exit = sys.exit
-#        sys.exit = self.exit
-#        sys.excepthook = self.exc_handler
-#
-#    def exit(self, code=0):
-#        self.exit_code = code
-#        self._orig_exit(code)
-#
-#    def exc_handler(self, exc_type, exc, *args):
-#        self.exception = exc
-#
-#def exit_function(hooks, job_name):
-##    to = "test_recipient@gmail.com"
-##    sender = "test_sender@gmail.com"
-##    subject = ""
-##    message = ""
-#    if hooks.exit_code is not None and hooks.exit_code != 0:
-#        message = "exit by sys.exit(%d)" % hooks.exit_code
-#        print(message)
-#        subject = "FAILURE: "+ job_name
-#    elif hooks.exception is not None:
-#        message = "exit by exception: %s" % hooks.exception
-#        print(message)
-#        subject = "FAILURE: "+ job_name
-#    else:
-#        message = "exit with success"
-#        subject = "SUCCESS: "+ job_name
-#    print("yo2")
-#    doc = Sheets_logging()
-#    doc.send_email()
-#
-#def exit_hook(job_name):
-#    print("yo1")
-#    exit_hooks = ExitHooks()
-#    exit_hooks.hook()
-#    atexit.register(exit_function, exit_hooks, job_name)
-#
-#
-#def main():
-#    print("test")
-#    sys.exit(1)
-
-
-
 if __name__ == '__main__':
     doc = Sheets_Logging()
     count = 0
+    TIMER_EMAIL = 43 200 #seconds
+    TIMER_DATA  = 300    #seconds
+#    TIMER_EMAIL = 120
+#    TIMER_DATA  = 30
     while True:
         doc.write_data()
         doc.send_image()
 
-        if count % 5 == 0:
+        if count % (TIMER_EMAIL/TIMER_DATA) == 0:
             doc.send_email()
 
         count += 1
         print(count)
-        time.sleep(10)
+        time.sleep(TIMER_DATA)
 
 
