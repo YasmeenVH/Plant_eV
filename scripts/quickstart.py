@@ -8,17 +8,22 @@ from google.oauth2.credentials import Credentials
 from software.Plant_eV.env_conditions import Sensors
 from datetime import datetime
 import time
+import base64
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import sys
 
 S = Sensors()
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
           'https://www.googleapis.com/auth/drive.metadata',
-          'https://www.googleapis.com/auth/drive']
+          'https://www.googleapis.com/auth/drive',
+          'https://mail.google.com/']
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = '1rri--nBigNM81pKesh6lv49hO8oz41gK76Z_r3s0EVk'
-SAMPLE_RANGE_NAME = 'Sheet1'
+SAMPLE_RANGE_NAME = 'Sheet3'
 
 class Sheets_Logging():
 #def main():
@@ -53,6 +58,8 @@ class Sheets_Logging():
 
         self.service_drive = build('drive', 'v3', credentials=creds)
 
+        self.service_gmail = build('gmail', 'v1', credentials=creds)
+
     def read_data(self):
         # Call the Sheets API
         service = self.service_sheet
@@ -70,24 +77,23 @@ class Sheets_Logging():
 
     def write_data(self):
         # Write to the sheets API
-        service = self.service_sheet
-        rh, temp = S.rh_temp()
-        co2, voc = S.gas()
-        date = datetime.now()
-        Data = [[str(date).split('.')[0],temp,rh,co2,voc,]]
-        body = {
-	     'values': Data
-        }
-
-        result = service.spreadsheets().values().append(
-               spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME,
-               valueInputOption='USER_ENTERED', body=body).execute()
+        service       = self.service_sheet
+        rh, temp      = S.rh_temp()
+        co2, voc      = S.gas()
+        date          = datetime.now()
+        Data          = [[str(date).split('.')[0],temp,rh,co2,voc,]]
+        body          = {
+	                 'values': Data
+                         }
+        result        = service.spreadsheets().values().append(
+                        spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME,
+                        valueInputOption='USER_ENTERED', body=body).execute()
 
 
     def send_image(self):
         #Send a image to the drive
         service       = self.service_drive
-        folder_id     = '17c4i15J_1m_ONgt5HFr-SeEzdv49WUYb'
+        folder_id     = '1PRsYPp_dLLT-otU0DZlCihOeKnmqJcvy'
         path          = S.picture()
         file_metadata = {'name':[path],'parents':[folder_id]}
         media         = MediaFileUpload(path, mimetype='image/jpeg', resumable=True)
@@ -96,11 +102,87 @@ class Sheets_Logging():
                                                fields='id').execute()
 
 
+    def send_email(self):
+        #Send email
+        service            = self.service_gmail
+        user_id            = "me"
+        to                 = "jerome.tbrais@gmail.com"
+        sender             = "biogen.plantsignal@gmail.com"
+        subject            = "Sensor Update"
+        message_text       = "Everything is still running properly!"
+        message            = MIMEText(message_text)
+        message['to']      = to
+        message['from']    = sender
+        message['subject'] = subject
+        message_created    = {'raw': base64.urlsafe_b64encode(message.as_string().encode()).decode()}
+        message_send       = (service.users().messages().send(userId=user_id, body=message_created).execute())
+
+
+
+#class ExitHooks(object):
+#
+#    def __init__(self):
+#        self.exit_code = None
+#        self.exception = None
+#
+#    def hook(self):
+#        print("yo3")
+#        self._orig_exit = sys.exit
+#        sys.exit = self.exit
+#        sys.excepthook = self.exc_handler
+#
+#    def exit(self, code=0):
+#        self.exit_code = code
+#        self._orig_exit(code)
+#
+#    def exc_handler(self, exc_type, exc, *args):
+#        self.exception = exc
+#
+#def exit_function(hooks, job_name):
+##    to = "test_recipient@gmail.com"
+##    sender = "test_sender@gmail.com"
+##    subject = ""
+##    message = ""
+#    if hooks.exit_code is not None and hooks.exit_code != 0:
+#        message = "exit by sys.exit(%d)" % hooks.exit_code
+#        print(message)
+#        subject = "FAILURE: "+ job_name
+#    elif hooks.exception is not None:
+#        message = "exit by exception: %s" % hooks.exception
+#        print(message)
+#        subject = "FAILURE: "+ job_name
+#    else:
+#        message = "exit with success"
+#        subject = "SUCCESS: "+ job_name
+#    print("yo2")
+#    doc = Sheets_logging()
+#    doc.send_email()
+#
+#def exit_hook(job_name):
+#    print("yo1")
+#    exit_hooks = ExitHooks()
+#    exit_hooks.hook()
+#    atexit.register(exit_function, exit_hooks, job_name)
+#
+#
+#def main():
+#    print("test")
+#    sys.exit(1)
+
+
 
 if __name__ == '__main__':
     doc = Sheets_Logging()
-    for j in range(30):
+    count = 0
+    while True:
         doc.write_data()
         doc.send_image()
-        print(j)
-        time.sleep(120)
+
+        if count % 5 == 0:
+            doc.send_email()
+
+        count += 1
+        print(count)
+        time.sleep(10)
+
+
