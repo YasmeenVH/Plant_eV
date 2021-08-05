@@ -7,6 +7,7 @@ import datetime
 import time
 import h5py
 import json
+import os
 import os.path
 from os import path
 from datetime import datetime
@@ -15,7 +16,7 @@ from software.Plant_eV.env_conditions import Sensors
 S=Sensors()
 
 NODEMCU_SEND_TIME = 2  # seconds between Node broadcasts
-TIMER_MAX         = 180 # time in seconds when the numpy files should be concatenated and stored as HDF5
+TIMER_MAX         = 540 # time in seconds when the numpy files should be concatenated and stored as HDF5
 TIMER_COND        = 10 # time in seconds when to get temp, rh, co2, voc sensors data
 timer             = 0
 
@@ -41,6 +42,9 @@ def get_timestamp():
     current_timestamp = datetime.now()
     timestamp_string = str(current_timestamp).split('.')[0]
     return timestamp_string
+
+def rsync_server():
+    os.system("rsync -ratulvzP --info=progress2 -e 'ssh -p 10356' /home/pi/Plant_eV/software/Plant_eV/data/ plantppl@6.tcp.ngrok.io:/data/plantppl/experiment1-preliminary")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -82,6 +86,7 @@ def on_message(client, userdata, msg):
 
     if timer * NODEMCU_SEND_TIME == TIMER_MAX:
         concatenate_files() # read all the small numpy files, write to one big HDF5, then delete all numpy files
+#        rsync_server()
         timer = 0
 
 def concatenate_files():
@@ -133,7 +138,7 @@ def concatenate_files():
     print (all_the_timestamp.shape, all_the_timestamp.dtype, all_the_timestamp.min(), all_the_timestamp.max(), all_the_timestamp.mean())
 
     timestamp_string = get_timestamp()
-    filename = f"{timestamp_string}.hdf5"
+    filename = f"/home/pi/Plant_eV/software/Plant_eV/data/{timestamp_string}.hdf5"
     f = h5py.File(filename, "w")
     f.create_dataset("ev_data", data=all_the_nodemcu_data)
     f.create_dataset("temp", data=all_the_temp)
@@ -156,7 +161,15 @@ def concatenate_files():
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.connect('10.0.0.66', 1883, 60)
+client.connect('192.168.0.112', 1883, 60)
 # Connect to the MQTT server and process messages in a background thread.
-client.loop_forever()
-#concatenate_files()
+max_time = 5500
+start_time = time.time()
+client.loop_start()
+while True:
+    time_now = time.time()
+    elapsed = time_now - start_time
+
+    if elapsed > max_time:
+        client.loop_stop()
+        break
