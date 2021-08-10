@@ -7,7 +7,16 @@ from extract import extract_data
 from scipy.signal import butter,filtfilt
 import pandas as pd
 from scipy import stats
+import h5py
 
+def read_hdf5():
+    hdfid = h5py.File("C:/Users/Jérôme/Documents/Dossiers_personnels/McGill_Intership/Project1_Plantcommunication/data_plantlong.hdf5", 'r')
+    #print(list(f.keys()))
+    #dset = f['ev_data']
+    #for k in hdfid.attrs.keys():
+    #    print('{} => {}'.format(k, hdfid.attrs[k]))
+    #print(hdfid.keys())
+    f.close()
 
 def decompose(signal, time):
     N = len(signal)
@@ -19,7 +28,7 @@ def decompose(signal, time):
 
     xf = np.linspace(0.0, 1.0//(2.0*T), N//2)
     xf2 = np.linspace(0.0, 1.0//(2.0 * T2), N//2)
-    plt.plot(xf, (2.0//N)*np.abs(y_ep[0:N//2]))
+    #plt.plot(xf, (2.0//N)*np.abs(y_ep[0:N//2]))
 
     #sig_fft = scipy.fftpack.fft(signal)
     #power = np.abs(sig_fft)
@@ -69,12 +78,6 @@ def lowpass_filter(data):
     #plt.title("lowpass")
     #plt.show
     return y
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
