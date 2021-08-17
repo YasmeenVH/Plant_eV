@@ -9,7 +9,7 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 
 ## replace this with whatever port the Arduino/NodeMCU is on (check in Arduino IDE)
-PORT = "/dev/cu.usbmodem14301"
+PORT = "/dev/cu.usbserial-0001"
 ## replace this with whatever baudrate you have in the reading script on the Arduino/NodeMCU
 BAUDRATE = 115_200
 
@@ -29,7 +29,10 @@ ser = serial.Serial(PORT, BAUDRATE, timeout=10)
 
 
 def get_serial_val():
-    line = ser.readline().decode("UTF-8")
+    try:
+        line = ser.readline().decode("UTF-8")
+    except UnicodeDecodeError:
+        return None
 
     # this is looking for a specific sctring in the serial connection,
     # so if you're not using my INO NodeMCU/Arduino firmware,
