@@ -71,13 +71,13 @@ def concatenate_files():
     print(f"wrote new aggregate file: {filename}")
 
 
-## 1. Create the folder to put data on npz format
-#if os.path.exists("./tmp"):
-#    print("dir already exists")
-#else:
-#    os.makedirs("./tmp")
-#    print("dir was created")
-#
+# 1. Create the folder to put data on npz format
+if os.path.exists("./tmp"):
+    print("dir already exists")
+else:
+    os.makedirs("./tmp")
+    print("dir was created")
+
 #
 # 2. Create IC2 bus for the TCA9548A
 i2c = board.I2C()
@@ -107,11 +107,10 @@ while timer_elapse-timer_start < TIMER:
          temp               = temp,
          humidity           = Rh,
          pressure           = pressure)
-    print(temp)
-    print(pressure)
+
     # Waiting time before another measurement
-    time.sleep(MEASURMENT_INTERVAL-3.6)
+    time.sleep(MEASURMENT_INTERVAL-1.8)
     timer_elapse = time.time()
 
-## 4. Concatenate file in a big hdf5 files
-#concatenate_files()
+# 4. Concatenate file in a big hdf5 files
+concatenate_files()
