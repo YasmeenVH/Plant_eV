@@ -81,27 +81,6 @@ class DataLoader(object):
 
             return master_hdf5
 
-
-    # def hdf5_data(self,filenames):
-    #
-    #     data = h5py.File(self.path + '/' + f, 'r')
-    #     dset = data['ev_data']
-    #     print(len(dset))
-    #     master_data.append(dset[()])
-    #     data.close()
-    #
-    #     return master_data
-    #
-    #
-    # def csv_data(self,file_name):
-    #
-    #     df = pd.read_csv(file_name)
-    #     first_column = df.iloc[:, 0]
-    #     data = first_column.iloc[:3000]
-    #     print(data)
-    #
-    #     return data
-
 if __name__ == "__main__":
     Loader = DataLoader(path=DC_BIAS,file_type=FILETYPE[0], blue = BLUE_DC, red = RED_DC, amber=AMBER_DC,res= True)
 
