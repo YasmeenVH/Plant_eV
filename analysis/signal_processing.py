@@ -1,93 +1,84 @@
-import scipy
-from scipy import fftpack
+# IMPORTS
+from scipy.fft import rfft, rfftfreq, irfft
 import numpy as np
-import matplotlib.pyplot as plt
-from extract import timeframe
-from extract import extract_data
-from scipy.signal import butter,filtfilt
-import pandas as pd
-from scipy import stats
-import h5py
+from scipy import signal
+from scipy.signal import butter, filtfilt
 
-def read_hdf5():
-    hdfid = h5py.File("C:/Users/Jérôme/Documents/Dossiers_personnels/McGill_Intership/Project1_Plantcommunication/data_plantlong.hdf5", 'r')
-    #print(list(f.keys()))
-    #dset = f['ev_data']
-    #for k in hdfid.attrs.keys():
-    #    print('{} => {}'.format(k, hdfid.attrs[k]))
-    #print(hdfid.keys())
-    f.close()
 
-def decompose(signal, time):
-    N = len(signal)
-    T = 1/N
-    T2 = 1/time  # test
-    x = np.linspace(0, 2*np.pi*N*T, N)
-    x2 = np.linspace(0, 2*np.pi*N*T2, N) # test
-    y_ep = fftpack.fft(signal)
+def volts(gain, data):
+    """ data = list of list of data fro trial
+        gain = is the settign on the ADS1115 amplifier used on the NodeMcu
 
-    xf = np.linspace(0.0, 1.0//(2.0*T), N//2)
-    xf2 = np.linspace(0.0, 1.0//(2.0 * T2), N//2)
-    #plt.plot(xf, (2.0//N)*np.abs(y_ep[0:N//2]))
+        volt_data = returns the volt value for original data
+        center_line = is the middle point based off the gain
+    """
 
-    #sig_fft = scipy.fftpack.fft(signal)
-    #power = np.abs(sig_fft)
-    #sample_freq = fftpack.fftfreq(signal.size, d=)
-    #sig_amp = 2 / time.size * np.abs(sig_fft)
-    #sig_freq = np.abs(scipy.fftpack.fftfreq(time.size, ))
-    plt.show()
+    volt_data = []
 
-def decompose2(signal, time):
+    if gain == 0:
+        resolution = 3.3 / 32768
 
-    y_ep = fftpack.fft(signal)
-    print("this is time: ",time)
-    amp = 2 / time * np.abs(y_ep)
-    sig_freq = np.abs(fftpack.fftfreq(int(time)))
-    plt.plot(sig_freq, amp)
-    plt.show()
+    if gain == 1:
+        resolution = 4.096 / 32768
 
-def decompose3(signal, time):
+    if gain == 2:
+        resolution = 2.048 / 32768
 
-    y_ep = fftpack.fft(signal)
-    print(len(y_ep), " amount of data points")
-    print("this is time: ",time)
-    amp = 2 / int(time) * np.abs(y_ep)
-    print(len(amp), " amplitude points")
-    sig_freq = np.abs(fftpack.fftfreq(y_ep.size))
-    print(len(sig_freq), " sig freq len")
-    plt.plot(sig_freq, amp)
-    plt.show()
-    pd.Series(amp).nlargest(1).round(0).astype(int).tolist()
-    magnitudes = abs(y_ep[np.where(sig_freq >=0)])
-    peak_freq = np.sort((np.argpartition(magnitudes,-2)[-2:])/time)
-    cutoff = peak_freq[0]
-    return cutoff
+    if gain == 4:
+        resolution = 1.024 / 32768
 
-def lowpass_filter(data):
-    #sampling_freq = n_samples/sample_time  # sample time needs to be in seconds
-    cutoff = 1.2
-    order = 2
-    print("Cutoff freq " + str(cutoff))
-    fs = 5
-    nyq = 0.5 * fs # Nyquist Frequency
-    normal_cutoff = cutoff / nyq
-    # Get the filter coefficients
-    b, a = butter(order, normal_cutoff, btype='low', analog=True)
-    y = filtfilt(b, a, data)
-    #plt.plot(y)
-    #plt.title("lowpass")
-    #plt.show
-    return y
+    if gain == 8:
+        resolution = 0.512 / 32768
+
+    if gain == 16:
+        resolution = 0.256 / 32768
+
+    for x in data:
+        v = x * resolution
+        volt_data.append(v)
+
+    center_line = (32768 / 2) * resolution
+
+    return volt_data, center_line
+
+
+def moving_average(data, window):
+    """ data = the electrical potential data
+        window = size of moving window, how many points to slide
+
+        Function returns smoothed data with different sized window chosen by the user
+    """
+    return np.convolve(data, np.ones(window), 'valid') / window
+
+
+def fast_fourier(n, freq, data):
+    """n = number of sample points
+       freq = sampling frequency of the time series, needs to be in Hz
+
+    Return will be frequency values with dB intensity """
+
+    yf = rfft(data)
+    xf = rfftfreq(n, 1 / freq)
+
+    return xf, yf
+
+
+def butter_filter(sig, order, lowcut, highcut, freq):
+    """sig = signal to analyze
+       order = order of the filter, the higher the more sever the dropoff
+       lowfreq =  cutoff frequency that is included. Beyond this one it fades out
+       sample freq = number of sample points
+       freq = sampling frequency of the time series, needs to be in Hz
+       Return will be a plotand values with dB intensity """
+    # lowcut = 2.2 , highcut = 3.2 , order = 10, freq = 10hz
+    sos = signal.butter(order, [lowcut, highcut], btype='bandstop', output='sos', fs=freq)
+    filtered = signal.sosfilt(sos, sig)
+
+    return filtered
+
+
 
 
 if __name__ == '__main__':
-
-    t = timeframe(1 / 24)
-    r = extract_data('timestamp', 10, t)
-    print(r[0])
-    print(len(r[0]))
-    print(r[1])
-    time_n = []
-    for x in r[1]:
-        time_n.append(datetime.utcfromtimestamp(x))
-    print(time_n)
+    v = volts(gain=0)
+    print(v)
