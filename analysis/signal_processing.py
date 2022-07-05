@@ -3,6 +3,8 @@ from scipy.fft import rfft, rfftfreq, irfft
 import numpy as np
 from scipy import signal
 from scipy.signal import butter, filtfilt
+#import PyWavelets as pywt
+from skimage.restoration import denoise_wavelet
 
 
 def volts(gain, data):
@@ -76,6 +78,10 @@ def butter_filter(sig, order, lowcut, highcut, freq):
 
     return filtered
 
+#def wavelet_filtering(data,wave_type, threshold, )
+    """data =signal
+       wave_type = the wavelet we want to use (db1, """
+    #y = denoise_wavelet(x, wavelet='db1', mode='soft', wavelet_levels=n, method='BayesShrink', rescale_sigma='True')
 
 
 
