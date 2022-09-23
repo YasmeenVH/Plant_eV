@@ -50,6 +50,7 @@ def on_message(client, userdata, msg):
     if (timer * NODEMCU_SEND_TIME) % TIMER_COND == 0:
         rh, temp = S.rh_temp()
         co2, voc = S.gas()
+        
 
         if temp == None or rh == None:
             temp = 1234
@@ -65,7 +66,8 @@ def on_message(client, userdata, msg):
              CO2                = co2,
              VOC                = voc,
              plant_ev_signals   = plant_ev_signals["data"],
-             timestamp          = plant_ev_signals["timestamp"])
+             timestamp          = plant_ev_signals["timestamp"],
+             nodeid             = plant_ev_signals["nodeid"])
         print("ok")
     else:
         timestamp_string = get_timestamp()
@@ -75,7 +77,8 @@ def on_message(client, userdata, msg):
              CO2                = 1234,
              VOC                = 1234,
              plant_ev_signals   = plant_ev_signals["data"],
-             timestamp          = plant_ev_signals["timestamp"])
+             timestamp          = plant_ev_signals["timestamp"],
+             nodeid             = plant_ev_signals["nodeid"])
 
     timer += 1
     print(timer)
@@ -83,6 +86,9 @@ def on_message(client, userdata, msg):
     if timer * NODEMCU_SEND_TIME == TIMER_MAX:
         concatenate_files() # read all the small numpy files, write to one big HDF5, then delete all numpy files
         timer = 0
+def sanity_clean():
+    tmp_files = sorted(os.listdir("./tmp"))
+    tmp_files_filtered = [x for x in tmp_files if ".npz" in x]
 
 def concatenate_files():
     tmp_files = sorted(os.listdir("./tmp"))
