@@ -105,7 +105,7 @@ void loop()
   JsonArray timestamp = doc.createNestedArray("timestamp");
   timestamp.add(getTime());
   JsonArray nodeid = doc.createNestedArray("nodeid");  //node ID to change for every nodemcu
-  nodeid.add(2);
+  nodeid.add(1);
   
   JsonArray data = doc.createNestedArray("data");
   
