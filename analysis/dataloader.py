@@ -19,25 +19,38 @@ R1 = config.res1 # 100Kohm
 R2 = config.res2 # 1Mohm
 R3 = config.res3 # 10Mohm
 
+WG = config.wg
+AL = config.al
+ALG = config.newblue
+
 GAIN = [0,1,2,4,8,16]
 ##file_type stuff csv, hdf5
 FILETYPE = config.file_type
 
 N_POINTS = 3000
 class DataLoader(object):
-    def __init__(self, path=DC_BIAS,file_type=FILETYPE, blue=BLUE_DC,red = RED_DC, amber= AMBER_DC, res = True, gain= GAIN, n_points = N_POINTS):
+    def __init__(self, path=DC_BIAS,file_type=FILETYPE, blue=BLUE_DC,red = RED_DC, amber= AMBER_DC, res = True, gain= GAIN, n_points = N_POINTS, material=True):
         self.path = path
         self.file_type = file_type
-        self.blue = blue
-        self.red = red
-        self.amber = amber
-        self.res = res
-        if self.res == True:
+        if material == True:
+            self.inverse = config.inverse
+            self.notinverse = config.notinverse
+            self.wg = WG # wire gel
+            self.al = AL# just aluminum
+            self.alg = ALG # aluminum with gel
+        else:
+            self.blue = blue
+            self.red = red
+            self.amber = amber
+
+        if res == True:
             self.r1 = R1
             self.r2 = R2
             self.r3 = R3
         self.gain = gain
         self.n_points = n_points
+
+
 
 
     def read_files(self,folder,n_points):
@@ -73,13 +86,17 @@ class DataLoader(object):
                     length_hdf5.append(len(flat_list))
                     all_data_hdf5.append(flat_list)
 
-            min_val = min(length_hdf5)
-            print(len(all_data_hdf5))
-            master_hdf5 = []
-            for x in all_data_hdf5:
-                master_hdf5.append(x[:min_val])
+            #flat_list_all = [item for sublist in all_data_hdf5 for item in sublist]
+            # flat_list_all = []
+            # for x in all_data_hdf5:
+            #     flat_list_all = flat_list_all + x
+            # min_val = min(length_hdf5)
+            # print(len(all_data_hdf5))
+            # master_hdf5 = []
+            # for x in all_data_hdf5:
+            #     master_hdf5.append(x[:min_val])
 
-            return master_hdf5
+            return all_data_hdf5 #flat_list_all #all_data_hdf5 #master_hdf5
 
 if __name__ == "__main__":
     Loader = DataLoader(path=DC_BIAS,file_type=FILETYPE[0], blue = BLUE_DC, red = RED_DC, amber=AMBER_DC,res= True)
