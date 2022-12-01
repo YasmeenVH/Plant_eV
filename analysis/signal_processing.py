@@ -35,13 +35,21 @@ def volts(gain, data):
     if gain == 16:
         resolution = 0.256 / 32768
 
-    for x in data:
-        v = x * resolution
-        volt_data.append(v)
-
+    # for x in data:
+    #     v = x * resolution
+    #     volt_data.append(v)
+    #volt_data = [[x * resolution for x in sublist] for sublist in data]
     center_line = (32768 / 2) * resolution
+    # for i in range(len(data)):
+    #     reading = []
+    #     for j in range(len(data[i])):
+    #         reading.append(data[i][j]*resolution)
+    #     volt_data.append(reading)
 
-    return volt_data, center_line
+    for i in range(len(data)):
+        volt_data.append(np.array(data[i])*resolution)
+
+    return list(volt_data), center_line
 
 
 def moving_average(data, window):
@@ -71,7 +79,7 @@ def butter_filter(sig, order, lowcut, highcut, freq):
        lowfreq =  cutoff frequency that is included. Beyond this one it fades out
        sample freq = number of sample points
        freq = sampling frequency of the time series, needs to be in Hz
-       Return will be a plotand values with dB intensity """
+       Return will be a plot and values with dB intensity """
     # lowcut = 2.2 , highcut = 3.2 , order = 10, freq = 10hz
     sos = signal.butter(order, [lowcut, highcut], btype='bandstop', output='sos', fs=freq)
     filtered = signal.sosfilt(sos, sig)
